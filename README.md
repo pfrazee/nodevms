@@ -38,6 +38,59 @@ Many teams in the Web 3.0 movement have turned to blockchains in order to provid
 
 Blockchains may be a fast way to make money, but they are not a fast way to run computers.
 
+### What's our goal?
+
+NodeVMS hosts should be integrated with a browser (such as [Beaker](https://beakerbrowser.com)) so that users can quickly self-deploy backend scripts, either on their personal device or on a public host. This will enable apps which ship with backend scripts, and can provision backend services in order to maintain shared datasets.
+
+For instance, this "RSVP" backend script might be used on an event site to track guests:
+
+```js
+// RSVP.js
+exports.init = async () => {
+  await Backend.files.mkdir('/rsvps')
+}
+exports.RSVP = async (isAttending, reason) => {
+  await Backend.files.writeFile('/rsvps/${Backend.callerId}.json', {
+    who: Backend.callerId,
+    isAttending,
+    reason
+  })
+}
+```
+
+This script would be deployed on a NodeVMS host and given a url such as `wss://nodevms.com/bob/my-party-rsvps`. An app would then connect to the backend to transact:
+
+```js
+// bobs-party-page.js
+const VMS_URL = 'wss://nodevms.com/bob/my-event-rsvps'
+async function onClickYes () {
+  const backend = new VMSClient(VMS_URL)
+  await backend.RSVP(true)
+}
+async function onClickNo () {
+  const backend = new VMSClient(VMS_URL)
+  await backend.RSVP(false, prompt('Why tho?'))
+}
+```
+
+The current state of the RSVPs could then be read directly by accessing the backend's files archive.
+
+```js
+// bobs-party-page.js
+async function getRSVPs () {
+  const backend = new VMSClient(VMS_URL)
+  const fs = backend.files
+  const rsvpFilenames = await fs.readdir('/rsvps')
+  let rsvps = []
+  for (let i = 0; i < rsvpFilenames.length; i++) {
+    let filename = rsvpFilenames[i]
+    rsvps.push(await fs.readFile(`/rsvps/${filename}`, 'json'))
+  }
+  return rsvps
+}
+```
+
+To learn more, read the tutorial below.
 
 ## Tutorial
 
@@ -100,7 +153,7 @@ To fix that, we need to persist state to the backend's files archive.
 
 ```js
 // persistent-counter.js
-const fs = System.files
+const fs = Backend.files
 exports.increment = async function () {
   var i = await fs.readFile('/counter', 'json')
   i++
@@ -111,7 +164,7 @@ exports.increment = async function () {
 
 Now, the counter state will persist after restarting the backend script.
 
-The files dat-archive provides a sandboxed folder for keeping state. Its interface can be found on the global `System` object as `System.files`.
+The files dat-archive provides a sandboxed folder for keeping state. Its interface can be found on the global `Backend` object as `Backend.files`.
 
 You can share the backend's files dat-archive. In fact, that is the recommended way to have people read the state of the backend! Its URL is emitted at start:
 
@@ -122,7 +175,7 @@ Files:    dat://17f29b83be7002479d8865dad3765dfaa9aaeb283289ec65e30992dc20e3dabd
 An example of how you might use the files dat-archive is, you might write a backend to maintain a photo album. The backend script would simply provide an API for writing the images:
 
 ```js
-const fs = System.files
+const fs = Backend.files
 exports.addPhoto = async function (name, data, encoding) {
   const path = `/photos/${name}`
   var alreadyExists = await doesFileExist(path)
@@ -188,18 +241,18 @@ nodevms -a localhost:5555 \
 
 ### Users & authentication
 
-The backend is provided information about the calling user, in order to make permissions decisions. The user's id is located on the `env` object, as `env.callerId`. Here's a simple example usage of permissions:
+The backend is provided information about the calling user, in order to make permissions decisions. The user's id is located on the `Backend` object, as `Backend.callerId`. Here's a simple example usage of permissions:
 
 ```js
 // secure-counter.js
 var ownerId
 exports.init = () => {
   if (ownerId) throw new Error('I already have an owner!')
-  ownerId = env.callerId
+  ownerId = Backend.callerId
 }
 var counter = 0
 exports.increment = () => {
-  if (env.callerId !== ownerId) throw new Error('You are not my owner!')
+  if (Backend.callerId !== ownerId) throw new Error('You are not my owner!')
   return counter++
 }
 ```
@@ -233,7 +286,7 @@ This means that, at this time, you cannot contact "Oracles."
 This is an example of a simple non-deterministic backend:
 
 ```js
-const fs = System.files
+const fs = Backend.files
 module.exports = async function () {
   var value = Math.random() // ignore the fact that we could seed this random
   fs.writeFile('/latest', value)
@@ -247,13 +300,13 @@ In the future, there will be a way to record non-determinism -- essentially by w
 
 ```js
 module.exports = async function () {
-  var value = await System.oracle(() => Math.random())
-  await System.files.writeFile('/latest', value)
+  var value = await Backend.oracle(() => Math.random())
+  await Backend.files.writeFile('/latest', value)
   return value
 }
 ```
 
-The `System.oracle()` wrapper will cache the return value so that replays of the log can use the same values, and not call the internal logic.
+The `Backend.oracle()` wrapper will cache the return value so that replays of the log can use the same values, and not call the internal logic.
 
 ### JS client
 
