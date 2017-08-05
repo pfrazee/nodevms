@@ -21,7 +21,11 @@ Currently our stack consists of:
 
 These APIs are peer-to-peer. They provide a weak form of data consensus called [eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency). This means, among other things, they can not provide [ACID transactions](https://en.wikipedia.org/wiki/ACID). For transactions, we need [sequential consistency](https://en.wikipedia.org/wiki/Consistency_model#Sequential_Consistency).
 
+### Why not blockchains
+
 Many teams in the Web 3.0 movement have turned to blockchains in order to provide sequential consistency. However, blockchains are not efficient enough for our purposes. They have very poor throughput, burn excess cycles for Proof-of-Work, and require upfront payment to execute operations. (Blockchains may be a fast way to make money, but they are not a fast way to run computers.)
+
+### What NodeVMS provides
 
 NodeVMS is designed to provide the same benefits of a blockchain VM (ie Ethereum) but with multiple orders-of-magnitude better throughput. NodeVMS provides:
 
