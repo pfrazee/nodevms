@@ -13,8 +13,8 @@ Background reading:
 
  - [x] CLI
  - [x] VM execution and environment
- - [ ] RPC server
- - [ ] RPC client
+ - [x] RPC server
+ - [x] RPC client
  - [ ] Debugmode authentication
  - [ ] REPL
  - [ ] Call log
@@ -22,6 +22,7 @@ Background reading:
  - [ ] Call log replay and verification
  - [ ] Production authentication
  - [ ] Secure VM
+ - [ ] Signed RPC calls
 
 
 ## Motivation

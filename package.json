@@ -30,6 +30,8 @@
   "dependencies": {
     "debug": "^2.6.8",
     "fs-jetpack": "^1.1.0",
+    "nodevms-client": "^1.0.0",
+    "rpc-websockets": "^3.4.6",
     "subcommand": "^2.1.0"
   }
 }
