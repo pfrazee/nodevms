@@ -29,6 +29,7 @@
   "homepage": "https://github.com/pfrazee/nodevms#readme",
   "dependencies": {
     "debug": "^2.6.8",
+    "node-dat-archive": "^1.0.1",
     "nodevms-client": "^1.0.0",
     "rpc-websockets": "pfrazee/rpc-websockets#d24b681fdd7126530d7be646f137896eefb13aea",
     "subcommand": "^2.1.0"
