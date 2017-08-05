@@ -15,7 +15,7 @@ Background reading:
  - [x] VM execution and environment
  - [x] RPC server
  - [x] RPC client
- - [ ] Debugmode authentication
+ - [x] Debugmode authentication
  - [ ] REPL
  - [ ] Call log
  - [ ] Files archive
