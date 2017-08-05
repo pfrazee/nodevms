@@ -23,18 +23,16 @@ exports.increment = function () {
 }
 ```
 
-It exports methods which can be called remotely. The script is executed from the commandline:
+It exports methods which can be called remotely.
+
+The script is executed from the commandline:
 
 ```bash
-recordrun -e ./counter.js
-```
-
-This execution would emit the following information:
-
-```bash
+$ recordrun -e ./counter.js
 recordrun v1.0.0
 Serving at localhost:5555
 Serving directory /home/bob/counter
+
 Files:    dat://17f29b83be7002479d8865dad3765dfaa9aaeb283289ec65e30992dc20e3dabd
 Call log: dat://7081814137ea43fc32348e2259027e94e85c7b395e6f3218e5f5cb803cc9bbef
 
@@ -46,30 +44,34 @@ Waiting for RPC connections
 Ctrl+C to Exit
 ```
 
-A client will now connect using websockets to make calls. We will use the recordrun JS repl to do so.
+Clients can now connect and call the contract!
+
+Let's use the RecordRun REPL to do so:
 
 ```bash
-recordrun -r localhost:5555
-```
-
-The session namespace will be populated with a `rpc` object which calls out to the live contract.
-
-```js
-> rpc.increment() // promises are automatically awaited by the repl
+$ recordrun -r localhost:5555
+Connecting...
+Connected.
+You can use 'client' object to access the contract.
+> client.increment()
 1
-> rpc.increment()
+> client.increment()
 2
-> rpc.increment()
+> client.increment()
 3
 ```
 
-Great! We have a smart-contract that maintains a counter for us. There's only one problem: the state isn't being persisted anywhere! If I restart recordrun, the counter will reset to zero.
+Great! We have a smart-contract service that maintains a counter for us. We can increment the counter by calling its exported method `increment()`.
+
+### Persisting state to the files dat-archive
+
+There's only one problem: the state isn't being persisted anywhere! If I were to restart recordrun, the counter will reset to zero. That isn't very useful.
 
 To fix that, we need to persist state to the contract's files archive.
 
 ```js
+// persistent-counter.js
 const fs = contract.filesDat
-
 exports.increment = async function () {
   var i = await fs.readFile('/counter', 'json')
   i++
@@ -80,7 +82,7 @@ exports.increment = async function () {
 
 Now, the counter state will persist after restarting the contract.
 
-The files dat-archive provides a sandboxed folder for keeping state. Its interface can be found on the global `contract` object, as `contract.filesDat`.
+The files dat-archive provides a sandboxed folder for keeping state. Its interface can be found on the global `contract` object as `contract.filesDat`.
 
 You can share the contract's files dat-archive. In fact, this is the recommended way to have people read the output of of the contract. Its URL is emitted at start:
 
@@ -106,9 +108,9 @@ exports.addPhoto = async function (name, data, encoding) {
 
 This contract would ensure that each name for a photo can be taken once-and-only-once.
 
-> **Race condition?** Under the normal design for Javascript, this contract would have a race-condition if two `addPhoto()` calls occurred at the same time for the same `name`. However, Recordrun only executes one call at a time; all other calls are queued until the active call returns. This is called a "contract-wide lock." The contract-wide lock is very inefficient, but it improves the replayability of the contract.
+> **Race condition?** Under the normal execution of Javascript, this contract would have a race-condition if two `addPhoto()` calls occurred at the same time for the same `name` value. However, Recordrun only executes one RPC call at a time; all other calls are queued until the active call returns. This is called a "contract-wide lock." The contract-wide lock is very inefficient, but it improves the replayability of the contract.
 
-### The contract files dat-archive
+### The content of the files dat-archive
 
 The current state of the files dat-archive is available on the FS of the RecordRun server. Its location is also emitted at the start (the "Serving directory") and it can be configured via cli opts:
 
@@ -122,7 +124,7 @@ If you examine the files dat-archive, you will find:
  - metadata about the contract and its files archive at `./dat.json`, and
  - a `.dat` folder, which contains the internal datastructures of the files dat-archive and the calls dat-log.
 
-**Never change the content of the files dat!!** Clients of your contract *will* detect the difference and lose trust in your server.
+**NOTE: You should never change the content of the files dat using the FS!!** Clients of your contract expect to be able to audit all changes made to the contract's state. They *will* detect an unlogged change and lose trust in your contract.
 
 ### JS client
 
