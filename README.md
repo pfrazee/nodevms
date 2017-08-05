@@ -18,11 +18,10 @@ Background reading:
  - [x] Debugmode authentication
  - [x] REPL
  - [x] Files archive
- - [ ] Call log
+ - [x] Call log
  - [ ] Call log replay and verification
- - [ ] Production authentication
+ - [ ] Production authentication & signed RPC calls
  - [ ] Secure VM
- - [ ] Signed RPC calls
 
 
 ## Motivation
