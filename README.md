@@ -9,6 +9,18 @@ Background reading:
 
 **This project is a proof-of-concept and doesnt run yet. When I wrote this disclaimer, it was just a README.**
 
+### TODOs
+
+ - [ ] CLI
+ - [ ] VM execution and environment
+ - [ ] RPC server
+ - [ ] RPC client
+ - [ ] Debugmode authentication
+ - [ ] REPL
+ - [ ] Call log
+ - [ ] Files archive
+ - [ ] Production authentication
+
 
 ## Motivation
 
