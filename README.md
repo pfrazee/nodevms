@@ -11,7 +11,7 @@ Background reading:
 
 ### TODOs
 
- - [ ] CLI
+ - [x] CLI
  - [ ] VM execution and environment
  - [ ] RPC server
  - [ ] RPC client
@@ -19,6 +19,7 @@ Background reading:
  - [ ] REPL
  - [ ] Call log
  - [ ] Files archive
+ - [ ] Call log replay and verification
  - [ ] Production authentication
 
 
@@ -122,7 +123,7 @@ It exports methods which can be called. NodeVMS exposes these methods over a Web
 To serve the backend script, we use the commandline:
 
 ```bash
-$ nodevms -e ./counter.js
+$ nodevms ./counter.js
 nodevms v1.0.0
 Serving at localhost:5555
 Serving directory /home/bob/counter
@@ -143,7 +144,7 @@ Clients can now connect and call to the backend!
 Let's use the NodeVMS REPL to do so:
 
 ```bash
-$ nodevms -r localhost:5555
+$ nodevms repl localhost:5555
 Connecting...
 Connected.
 You can use 'client' object to access the backend.
@@ -213,7 +214,7 @@ This backend would ensure that each name for a photo can be taken once-and-only-
 The current state of the files dat-archive is available on the FS of the NodeVMS server. Its location is also emitted at the start (the "Serving directory") and it can be configured via cli opts:
 
 ```
-nodevms -e ./counter.js ./my-counter-files
+$ nodevms ./counter.js --dir ./my-counter-files
 ```
 
 If you examine the files dat-archive, you will find:
@@ -229,24 +230,24 @@ If you examine the files dat-archive, you will find:
 Each backend executed by NodeVMS publishes a call log using Dat. This call log can be replayed using NodeVMS to verify the state of the files dat-archive.
 
 ```bash
-nodevms -a localhost:5555
+$ nodevms verify localhost:5555
 ```
 
 Optionally, you can include the urls of the expected files archive and dat log:
 
 ```bash
-nodevms -a localhost:5555 \
+$ nodevms verify localhost:5555 \
   --files dat://17f29b83be7002479d8865dad3765dfaa9aaeb283289ec65e30992dc20e3dabd \
   --log dat://7081814137ea43fc32348e2259027e94e85c7b395e6f3218e5f5cb803cc9bbef
 ```
 
 Your NodeVMS client will download the call log and the current files archive, then replay the history to confirm the output state. If it does not match, NodeVMS will alert you to the disparity.
 
-If you provide a storage directory, the verifier will continue running after the initial check and live-stream updates. The datasets will be persisted and rehosted on the dat network.
+If you use the `watch` command, the verifier will continue running after the initial check and live-stream updates. The datasets will be persisted and rehosted on the dat network.
 
 ```bash
-nodevms -a localhost:5555 \
-  --out ./trusty-bobs-counters \
+$ nodevms watch localhost:5555 \
+  --dir ./trusty-bobs-counters \
   --files dat://17f29b83be7002479d8865dad3765dfaa9aaeb283289ec65e30992dc20e3dabd \
   --log dat://7081814137ea43fc32348e2259027e94e85c7b395e6f3218e5f5cb803cc9bbef
 ```
@@ -274,10 +275,10 @@ This backend provides a counter which only the owner can increment. (The owner i
 When debugmode is on, you can set the calledId to anything using the Basic Auth header when connecting to the server's websocket. For example:
 
 ```
-nodevms -e ./secure-counter.js --debug
+$ nodevms ./secure-counter.js --debug
 
 # in another term, the repl call:
-nodevms -r localhost:5555 --user bob
+$ nodevms repl localhost:5555 --user bob
 ```
 
 **NOTE: The current version of NodeVMS does not have production authentication implemented.** Only the debugmode authentication is available.

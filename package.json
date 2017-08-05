@@ -1,0 +1,32 @@
+{
+  "name": "nodevms",
+  "version": "1.0.0",
+  "description": "A cryptographically auditable VM service using Nodejs and Dat.",
+  "bin": {"nodevms": "./bin.js"},
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "ava -s test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pfrazee/nodevms.git"
+  },
+  "keywords": [
+    "dat",
+    "node",
+    "vm"
+  ],
+  "author": "Paul Frazee <pfrazee@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pfrazee/nodevms/issues"
+  },
+  "homepage": "https://github.com/pfrazee/nodevms#readme",
+  "dependencies": {
+    "debug": "^2.6.8",
+    "subcommand": "^2.1.0"
+  }
+}
