@@ -17,8 +17,8 @@ Background reading:
  - [x] RPC client
  - [x] Debugmode authentication
  - [x] REPL
+ - [x] Files archive
  - [ ] Call log
- - [ ] Files archive
  - [ ] Call log replay and verification
  - [ ] Production authentication
  - [ ] Secure VM
