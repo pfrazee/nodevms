@@ -16,7 +16,7 @@ Background reading:
  - [x] RPC server
  - [x] RPC client
  - [x] Debugmode authentication
- - [ ] REPL
+ - [x] REPL
  - [ ] Call log
  - [ ] Files archive
  - [ ] Call log replay and verification
