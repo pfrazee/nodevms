@@ -12,6 +12,17 @@ Background reading:
 
 ## Motivation
 
+NodeVMS is designed to provide the same benefits of a blockchain VM (ie Ethereum) but with multiple orders-of-magnitude better throughput. NodeVMS provides:
+
+ - Easy deployment of backend scripts on any NodeVMS host.
+ - High transaction throughput (TODO: put a bench here).
+ - Trustless execution of the backend through cryptographic auditing (you do not need to trust the NodeVMS host).
+ - Transactions and [sequential consistency](https://en.wikipedia.org/wiki/Consistency_model#Sequential_Consistency).
+
+[You can read about the justification for NodeVMS in this post](https://gist.github.com/pfrazee/bf13db9dea21936af320c512811c2a2b).
+
+### Background
+
 With the [Beaker Browser](https://beakerbrowser.com), we're creating a decentralized and p2p networking stack for browser applications. Our goal is to execute applications without corporate services, so that users can own their data and their software.
 
 Currently our stack consists of:
@@ -23,18 +34,9 @@ These APIs are peer-to-peer. They provide a weak form of data consensus called [
 
 ### Why not blockchains
 
-Many teams in the Web 3.0 movement have turned to blockchains in order to provide sequential consistency. However, blockchains are not efficient enough for our purposes. They have very poor throughput, burn excess cycles for Proof-of-Work, and require upfront payment to execute operations. (Blockchains may be a fast way to make money, but they are not a fast way to run computers.)
+Many teams in the Web 3.0 movement have turned to blockchains in order to provide sequential consistency. However, blockchains are not efficient enough for our purposes. They have very poor throughput, burn excess cycles for Proof-of-Work, and require upfront payment to execute operations.
 
-### What NodeVMS provides
-
-NodeVMS is designed to provide the same benefits of a blockchain VM (ie Ethereum) but with multiple orders-of-magnitude better throughput. NodeVMS provides:
-
- - Easy deployment of backend scripts on any NodeVMS host.
- - High transaction throughput (TODO: put a bench here).
- - Trustless execution of the backend through cryptographic auditing (you do not need to trust the NodeVMS host).
- - Transactions and [sequential consistency](https://en.wikipedia.org/wiki/Consistency_model#Sequential_Consistency).
-
-[You can read about the justification for NodeVMS in this post](https://gist.github.com/pfrazee/bf13db9dea21936af320c512811c2a2b).
+Blockchains may be a fast way to make money, but they are not a fast way to run computers.
 
 
 ## Tutorial
