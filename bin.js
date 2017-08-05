@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-var subcommand = require('subcommand')
-var debug = require('debug')('nodevms')
-var usage = require('./lib/usage')
+const subcommand = require('subcommand')
+const debug = require('debug')('nodevms')
+const usage = require('./lib/usage')
 
 process.title = 'nodevms'
 
-var config = {
+const config = {
   defaults: [],
   root: require('./lib/commands/exec'),
   none: usage,
@@ -26,11 +26,11 @@ var config = {
 }
 
 if (debug.enabled) {
-  var pkg = require('./package.json')
+  const pkg = require('./package.json')
   debug('nodevms', pkg.version)
   debug('node', process.version)
 }
 
 // Match Args + Run command
-var match = subcommand(config)
+const match = subcommand(config)
 match(process.argv.slice(2))

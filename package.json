@@ -2,7 +2,9 @@
   "name": "nodevms",
   "version": "1.0.0",
   "description": "A cryptographically auditable VM service using Nodejs and Dat.",
-  "bin": {"nodevms": "./bin.js"},
+  "bin": {
+    "nodevms": "./bin.js"
+  },
   "main": "index.js",
   "directories": {
     "doc": "docs"
@@ -27,6 +29,7 @@
   "homepage": "https://github.com/pfrazee/nodevms#readme",
   "dependencies": {
     "debug": "^2.6.8",
+    "fs-jetpack": "^1.1.0",
     "subcommand": "^2.1.0"
   }
 }

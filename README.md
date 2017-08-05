@@ -12,7 +12,7 @@ Background reading:
 ### TODOs
 
  - [x] CLI
- - [ ] VM execution and environment
+ - [x] VM execution and environment
  - [ ] RPC server
  - [ ] RPC client
  - [ ] Debugmode authentication
@@ -21,6 +21,7 @@ Background reading:
  - [ ] Files archive
  - [ ] Call log replay and verification
  - [ ] Production authentication
+ - [ ] Secure VM
 
 
 ## Motivation
