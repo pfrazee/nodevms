@@ -20,6 +20,7 @@ Background reading:
  - [x] Files archive
  - [x] Call log
  - [ ] Call log replay and verification
+ - [ ] Write protected backend script to files archive
  - [ ] Production authentication & signed RPC calls
  - [ ] Secure VM
 
