@@ -13,8 +13,7 @@ const config = {
   commands: [
     require('./lib/commands/exec'),
     require('./lib/commands/repl'),
-    require('./lib/commands/verify'),
-    require('./lib/commands/watch')
+    require('./lib/commands/verify')
   ],
   usage: {
     command: usage,

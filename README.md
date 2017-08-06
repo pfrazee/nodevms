@@ -19,8 +19,7 @@ Background reading:
  - [x] REPL
  - [x] Files archive
  - [x] Call log
- - [ ] Call log replay and verification
- - [ ] Write protected backend script to files archive
+ - [x] Call log replay and verification
  - [ ] Production authentication & signed RPC calls
  - [ ] Secure VM
 
@@ -213,17 +212,13 @@ This backend would ensure that each name for a photo can be taken once-and-only-
 
 ### The content of the files dat-archive
 
-The current state of the files dat-archive is available on the FS of the NodeVMS server. Its location is also emitted at the start (the "Serving directory") and it can be configured via cli opts:
+The state of the files dat-archive is saved on the FS of the NodeVMS server. Its location is also emitted at the start (the "Serving directory") and it can be configured via cli opts:
 
 ```
 $ nodevms ./counter.js --dir ./my-counter-files
 ```
 
-If you examine the files dat-archive, you will find:
-
- - a copy of the backend script at `./backend.js`,
- - metadata about the backend and its files archive at `./dat.json`, and
- - a `.dat` folder, which contains the internal datastructures of the files dat-archive and the call log.
+If you examine the directory, you will find the internal datastructures of the files dat-archive and the call log.
 
 **NOTE: You should never change the content of the files dat using the FS!!** Clients of your backend expect to be able to audit all changes made to the backend's state. They *will* detect an unlogged change and lose trust in your backend.
 
@@ -245,14 +240,6 @@ $ nodevms verify localhost:5555 \
 
 Your NodeVMS client will download the call log and the current files archive, then replay the history to confirm the output state. If it does not match, NodeVMS will alert you to the disparity.
 
-If you use the `watch` command, the verifier will continue running after the initial check and live-stream updates. The datasets will be persisted and rehosted on the dat network.
-
-```bash
-$ nodevms watch localhost:5555 \
-  --dir ./trusty-bobs-counters \
-  --files dat://17f29b83be7002479d8865dad3765dfaa9aaeb283289ec65e30992dc20e3dabd \
-  --log dat://7081814137ea43fc32348e2259027e94e85c7b395e6f3218e5f5cb803cc9bbef
-```
 
 ### Users & authentication
 
