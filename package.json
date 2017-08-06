@@ -29,20 +29,10 @@
   "homepage": "https://github.com/pfrazee/nodevms#readme",
   "dependencies": {
     "chalk": "^2.0.1",
-    "concat-stream": "^1.6.0",
-    "dat-swarm-defaults": "^1.0.0",
     "debug": "^2.6.8",
-    "deep-eql": "^3.0.0",
-    "diff-file-tree": "^2.1.1",
-    "discovery-swarm": "^4.4.2",
     "figures": "^2.0.0",
-    "hypercore": "^6.7.0",
+    "libvms": "^1.0.0",
     "node-dat-archive": "^1.1.0",
-    "nodevms-client": "^1.1.2",
-    "random-access-file": "^1.8.1",
-    "random-access-memory": "^2.4.0",
-    "rpc-websockets": "github:pfrazee/rpc-websockets#d24b681fdd7126530d7be646f137896eefb13aea",
-    "subcommand": "^2.1.0",
-    "tempy": "^0.1.0"
+    "subcommand": "^2.1.0"
   }
 }
