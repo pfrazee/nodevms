@@ -1,0 +1,1 @@
+exports.whoami = () => System.caller.id

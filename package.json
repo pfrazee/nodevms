@@ -31,7 +31,7 @@
     "chalk": "^2.0.1",
     "debug": "^2.6.8",
     "figures": "^2.0.0",
-    "libvms": "^1.0.0",
+    "libvms": "^2.0.2",
     "node-dat-archive": "^1.1.0",
     "subcommand": "^2.1.0"
   }

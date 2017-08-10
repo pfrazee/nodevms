@@ -1,15 +1,24 @@
-# NodeVMS
+# NodeVMS alpha
 
-A cryptographically auditable VM service using Nodejs and [Dat](https://github.com/datproject/dat).
+A cryptographically auditable VM service using Nodejs and [Dat](https://github.com/datproject/dat). NodeVMS provides:
+
+ - Easy deployment of backend scripts on a NodeVMS host.
+ - RPC connectivity to backend scripts using Websockets.
+ - Trustless execution of the backend through cryptographic auditing (you do not need to trust the NodeVMS host).
 
 Background reading:
 
+ - [NodeVMS alpha: trustless execution of services on nodejs](https://pfrazee.hashbase.io/blog/nodevms-alpha)
  - [What is the Dat protocol?](https://beakerbrowser.com/docs/inside-beaker/)
- - [Can we create a smart contract VM on nodejs using Dat?](https://gist.github.com/pfrazee/bf13db9dea21936af320c512811c2a2b)
 
-**This project is a proof-of-concept and doesnt run yet. When I wrote this disclaimer, it was just a README.**
+See also:
+
+ - [LibVMS](https://github.com/pfrazee/libvms)
+ - [Example Scripts](./examples)
 
 ### TODOs
+
+Still an alpha / prototype.
 
  - [x] CLI
  - [x] VM execution and environment
@@ -22,93 +31,11 @@ Background reading:
  - [x] Call log replay and verification
  - [ ] Production authentication & signed RPC calls
  - [ ] Secure VM
-
-
-## Motivation
-
-NodeVMS is designed to provide the same benefits of a blockchain VM (ie Ethereum) but with multiple orders-of-magnitude better throughput. NodeVMS provides:
-
- - Easy deployment of backend scripts on any NodeVMS host.
- - High transaction throughput (TODO: put a bench here).
- - Trustless execution of the backend through cryptographic auditing (you do not need to trust the NodeVMS host).
- - Transactions and [sequential consistency](https://en.wikipedia.org/wiki/Consistency_model#Sequential_Consistency).
-
-[You can read about the justification for NodeVMS in this post](https://gist.github.com/pfrazee/bf13db9dea21936af320c512811c2a2b).
-
-### Background
-
-With the [Beaker Browser](https://beakerbrowser.com), we're creating a decentralized and p2p networking stack for browser applications. Our goal is to execute applications without corporate services, so that users can own their data and their software.
-
-Currently our stack consists of:
-
- - The [DatArchive API](https://beakerbrowser.com/docs/apis/dat.html) for publishing files globally and securely
- - The [InJest DB](https://github.com/beakerbrowser/injestdb) for publishing and querying tables globally and securely
-
-These APIs are peer-to-peer. They provide a weak form of data consensus called [eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency). This means, among other things, they can not provide [ACID transactions](https://en.wikipedia.org/wiki/ACID). For transactions, we need [sequential consistency](https://en.wikipedia.org/wiki/Consistency_model#Sequential_Consistency).
-
-### Why not blockchains
-
-Many teams in the Web 3.0 movement have turned to blockchains in order to provide sequential consistency. However, blockchains are not efficient enough for our purposes. They have very poor throughput, burn excess cycles for Proof-of-Work, and require upfront payment to execute operations.
-
-Blockchains may be a fast way to make money, but they are not a fast way to run computers.
-
-### What's our goal?
-
-NodeVMS hosts should be integrated with a browser (such as [Beaker](https://beakerbrowser.com)) so that users can quickly self-deploy backend scripts, either on their personal device or on a public host. This will enable apps which ship with backend scripts, and can provision backend services in order to maintain shared datasets.
-
-For instance, this "RSVP" backend script might be used on an event site to track guests:
-
-```js
-// RSVP.js
-exports.init = async () => {
-  await Backend.files.mkdir('/rsvps')
-}
-exports.RSVP = async (isAttending, reason) => {
-  await Backend.files.writeFile('/rsvps/${Backend.callerId}.json', {
-    who: Backend.callerId,
-    isAttending,
-    reason
-  })
-}
-```
-
-This script would be deployed on a NodeVMS host and given a url such as `wss://nodevms.com/bob/my-party-rsvps`. An app would then connect to the backend to transact:
-
-```js
-// bobs-party-page.js
-const VMS_URL = 'wss://nodevms.com/bob/my-event-rsvps'
-async function onClickYes () {
-  const backend = new VMSClient(VMS_URL)
-  await backend.RSVP(true)
-}
-async function onClickNo () {
-  const backend = new VMSClient(VMS_URL)
-  await backend.RSVP(false, prompt('Why tho?'))
-}
-```
-
-The current state of the RSVPs could then be read directly by accessing the backend's files archive.
-
-```js
-// bobs-party-page.js
-async function getRSVPs () {
-  const backend = new VMSClient(VMS_URL)
-  const fs = backend.files
-  const rsvpFilenames = await fs.readdir('/rsvps')
-  let rsvps = []
-  for (let i = 0; i < rsvpFilenames.length; i++) {
-    let filename = rsvpFilenames[i]
-    rsvps.push(await fs.readFile(`/rsvps/${filename}`, 'json'))
-  }
-  return rsvps
-}
-```
-
-To learn more, read the tutorial below.
+ - [ ] Oracles
 
 ## Tutorial
 
-A "backend script" is a self-contained nodejs module. It is given limited `require()` access.
+A "backend script" is a self-contained nodejs module.
 
 ```js
 // counter.js
@@ -125,19 +52,11 @@ To serve the backend script, we use the commandline:
 
 ```bash
 $ nodevms ./counter.js
-nodevms v1.0.0
 Serving at localhost:5555
 Serving directory /home/bob/counter
 
 Files:    dat://17f29b83be7002479d8865dad3765dfaa9aaeb283289ec65e30992dc20e3dabd
 Call log: dat://7081814137ea43fc32348e2259027e94e85c7b395e6f3218e5f5cb803cc9bbef
-
-0 connections | Download 0 B/s Upload 0 B/s
-
-Waiting for RPC connections
-
-
-Ctrl+C to Exit
 ```
 
 Clients can now connect and call to the backend!
@@ -167,7 +86,7 @@ To fix that, we need to persist state to the backend's files archive.
 
 ```js
 // persistent-counter.js
-const fs = Backend.files
+const fs = System.files
 exports.increment = async function () {
   var i = await fs.readFile('/counter', 'json')
   i++
@@ -178,7 +97,7 @@ exports.increment = async function () {
 
 Now, the counter state will persist after restarting the backend script.
 
-The files dat-archive provides a sandboxed folder for keeping state. Its interface can be found on the global `Backend` object as `Backend.files`.
+The files dat-archive provides a sandboxed folder for keeping state. Its interface can be found on the global `Backend` object as `System.files`.
 
 You can share the backend's files dat-archive. In fact, that is the recommended way to have people read the state of the backend! Its URL is emitted at start:
 
@@ -189,7 +108,7 @@ Files:    dat://17f29b83be7002479d8865dad3765dfaa9aaeb283289ec65e30992dc20e3dabd
 An example of how you might use the files dat-archive is, you might write a backend to maintain a photo album. The backend script would simply provide an API for writing the images:
 
 ```js
-const fs = Backend.files
+const fs = System.files
 exports.addPhoto = async function (name, data, encoding) {
   const path = `/photos/${name}`
   var alreadyExists = await doesFileExist(path)
@@ -243,18 +162,18 @@ Your NodeVMS client will download the call log and the current files archive, th
 
 ### Users & authentication
 
-The backend is provided information about the calling user, in order to make permissions decisions. The user's id is located on the `Backend` object, as `Backend.callerId`. Here's a simple example usage of permissions:
+The backend is provided information about the calling user, in order to make permissions decisions. The user's id is located on the `Backend` object, as `System.caller.id`. Here's a simple example usage of permissions:
 
 ```js
 // secure-counter.js
 var ownerId
 exports.init = () => {
   if (ownerId) throw new Error('I already have an owner!')
-  ownerId = Backend.callerId
+  ownerId = System.caller.id
 }
 var counter = 0
 exports.increment = () => {
-  if (Backend.callerId !== ownerId) throw new Error('You are not my owner!')
+  if (System.caller.id !== ownerId) throw new Error('You are not my owner!')
   return counter++
 }
 ```
@@ -288,7 +207,7 @@ This means that, at this time, you cannot contact "Oracles."
 This is an example of a simple non-deterministic backend:
 
 ```js
-const fs = Backend.files
+const fs = System.files
 module.exports = async function () {
   var value = Math.random() // ignore the fact that we could seed this random
   fs.writeFile('/latest', value)
@@ -302,22 +221,23 @@ In the future, there will be a way to record non-determinism -- essentially by w
 
 ```js
 module.exports = async function () {
-  var value = await Backend.oracle(() => Math.random())
-  await Backend.files.writeFile('/latest', value)
+  var value = await System.oracle(() => Math.random())
+  await System.files.writeFile('/latest', value)
   return value
 }
 ```
 
-The `Backend.oracle()` wrapper will cache the return value so that replays of the log can use the same values, and not call the internal logic.
+The `System.oracle()` wrapper will cache the return value so that replays of the log can use the same values, and not call the internal logic.
 
 ### JS client
 
 You can programmatically connect to a NodeVMS backend using `nodevms-client`:
 
 ```js
-var RRC = require('nodevms-client')
-var rpc = await RRC.connect('localhost:5555')
-console.log(await rpc.increment())
+var RPCClient = require('nodevms-client')
+var client = new RPCClient()
+await client.connect('localhost:5555')
+console.log(await client.increment())
 ```
 
 The rpc object will have all of the methods exported by the backend. Each method returns a promise, and can take any number of arguments.
@@ -326,8 +246,6 @@ The `connect()` function takes a set of opts:
 
 ```js
 RPC.connect(backendURL, {
-  user: 'bob',   // who should we connect as? (default null)
-  timeout: 5e3,  // how many ms before the call times out? (default 5 seconds)
-  audit: false   // should we audit the state of the backend? (default false)
+  user: 'bob'  // who should we connect as? (default null)
 })
 ```
