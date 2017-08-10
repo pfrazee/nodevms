@@ -6,15 +6,15 @@ A cryptographically auditable VM service using Nodejs and [Dat](https://github.c
  - RPC connectivity to backend scripts using Websockets.
  - Trustless execution of the backend through cryptographic auditing (you do not need to trust the NodeVMS host).
 
-Background reading:
-
- - [NodeVMS alpha: trustless execution of services on nodejs](https://pfrazee.hashbase.io/blog/nodevms-alpha)
- - [What is the Dat protocol?](https://beakerbrowser.com/docs/inside-beaker/)
+**Background reading:** [NodeVMS alpha: trustless execution of services on nodejs](https://pfrazee.hashbase.io/blog/nodevms-alpha)
 
 See also:
 
  - [LibVMS](https://github.com/pfrazee/libvms)
  - [Example Scripts](./examples)
+ - [What is the Dat protocol?](https://beakerbrowser.com/docs/inside-beaker/)
+
+
 
 ### TODOs
 
@@ -22,12 +22,8 @@ Still an alpha / prototype.
 
  - [x] CLI
  - [x] VM execution and environment
- - [x] RPC server
- - [x] RPC client
+ - [x] RPC server, client repl
  - [x] Debugmode authentication
- - [x] REPL
- - [x] Files archive
- - [x] Call log
  - [x] Call log replay and verification
  - [ ] Production authentication & signed RPC calls
  - [ ] Secure VM
@@ -51,7 +47,7 @@ It exports methods which can be called. NodeVMS exposes these methods over a Web
 To serve the backend script, we use the commandline:
 
 ```bash
-$ nodevms ./counter.js
+$ nodevms exec ./counter.js
 Serving at localhost:5555
 Serving directory /home/bob/counter
 
@@ -134,7 +130,7 @@ This backend would ensure that each name for a photo can be taken once-and-only-
 The state of the files dat-archive is saved on the FS of the NodeVMS server. Its location is also emitted at the start (the "Serving directory") and it can be configured via cli opts:
 
 ```
-$ nodevms ./counter.js --dir ./my-counter-files
+$ nodevms exec ./counter.js --dir ./my-counter-files
 ```
 
 If you examine the directory, you will find the internal datastructures of the files dat-archive and the call log.
@@ -183,7 +179,7 @@ This backend provides a counter which only the owner can increment. (The owner i
 When debugmode is on, you can set the calledId to anything using the Basic Auth header when connecting to the server's websocket. For example:
 
 ```
-$ nodevms ./secure-counter.js --debug
+$ nodevms exec ./secure-counter.js --debug
 
 # in another term, the repl call:
 $ nodevms repl localhost:5555 --user bob
